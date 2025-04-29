@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from './modules/authModule';
+import { ConfigModule } from '@nestjs/config';
+import { User } from './users/entities/user.entity';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
+import { UserProfileModule } from './user-profile/user-profile.module';
+import { MenuModule } from './menu/menu.module';
 
 @Module({
   imports: [
@@ -14,7 +19,14 @@ import { AuthModule } from './modules/authModule';
       autoLoadEntities: true, // автоматически подключает Entity
       synchronize: true, // true для разработки (в проде ставь false)
     }),
-    AuthModule, // Подключаем AuthModule
+    TypeOrmModule.forFeature([User]),
+    ConfigModule.forRoot({
+      isGlobal: true, // доступен во всем приложении
+    }),
+    UsersModule,
+    AuthModule,
+    UserProfileModule,
+    MenuModule, // Подключаем AuthModule
     // другие модули
   ],
 })
