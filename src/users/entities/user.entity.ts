@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { Exclude } from 'class-transformer'; // Добавить
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { Menu } from '../../menu/entities/menu.entity'; // Добавить
 
 @Entity('users')
 export class User {
@@ -15,4 +16,8 @@ export class User {
   @Exclude() // Скрываем пароль
   @Column()
   password: string;
+
+  // src/user/entities/user.entity.ts
+  @OneToMany(() => Menu, (menu) => menu.user)
+  menus: Menu[];
 }
