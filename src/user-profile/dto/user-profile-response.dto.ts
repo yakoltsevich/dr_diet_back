@@ -5,12 +5,6 @@ export class UserProfileResponseDto {
   id: number;
 
   @ApiProperty()
-  firstName: string;
-
-  @ApiProperty()
-  lastName: string;
-
-  @ApiProperty()
   birthDate: string;
 
   @ApiProperty()
@@ -48,4 +42,16 @@ export class UserProfileResponseDto {
 
   @ApiPropertyOptional({ type: [String] })
   dislikedFoods?: string[];
+
+  @ApiProperty()
+  calories: number;
+
+  @ApiProperty()
+  fats: number;
+
+  @ApiProperty()
+  carbs: number;
+
+  @ApiProperty()
+  proteins: number;
 }

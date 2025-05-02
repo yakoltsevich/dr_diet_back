@@ -17,16 +17,6 @@ import {
 export class UpdateUserProfileDto extends PartialType(CreateUserProfileDto) {
   @ApiPropertyOptional()
   @IsOptional()
-  @IsString()
-  firstName?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  lastName?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
   @IsDateString()
   birthDate?: string;
 
@@ -89,4 +79,24 @@ export class UpdateUserProfileDto extends PartialType(CreateUserProfileDto) {
   @IsOptional()
   @IsArray()
   dislikedFoods?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  calories?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  fats?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  carbs?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNumber()
+  proteins?: number;
 }

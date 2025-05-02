@@ -7,8 +7,11 @@ import {
   Patch,
   Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -19,16 +22,24 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity'; // предполагаемая сущность
+import { User } from './entities/user.entity';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { BaseController } from '../common/base/base.controller'; // предполагаемая сущность
+import { Request } from 'express';
 
 @ApiTags('Users')
 @Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+export class UsersController extends BaseController {
+  constructor(private readonly usersService: UsersService) {
+    super();
+  }
 
   @Post()
   @ApiOperation({ summary: 'Создать нового пользователя' })
-  @ApiBody({ type: CreateUserDto })
+  @ApiBody({
+    type: CreateUserDto,
+    description: 'Имя, email и пароль пользователя',
+  })
   @ApiResponse({
     status: 201,
     description: 'Пользователь успешно создан',
@@ -69,7 +80,10 @@ export class UsersController {
   @Patch(':id')
   @ApiOperation({ summary: 'Обновить пользователя по ID' })
   @ApiParam({ name: 'id', description: 'ID пользователя' })
-  @ApiBody({ type: UpdateUserDto })
+  @ApiBody({
+    type: UpdateUserDto,
+    description: 'Поля для обновления: name, email, password',
+  })
   @ApiResponse({
     status: 200,
     description: 'Пользователь успешно обновлен',
@@ -82,6 +96,16 @@ export class UsersController {
   })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(Number(id), updateUserDto);
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Получить текущего пользователя (по JWT)' })
+  @ApiResponse({ status: 200, description: 'Текущий пользователь', type: User })
+  async getMe(@Req() req: Request) {
+    const userId = this.getUserId(req);
+    return this.usersService.getMe(userId);
   }
 
   @Delete(':id')

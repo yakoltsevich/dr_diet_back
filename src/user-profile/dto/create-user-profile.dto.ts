@@ -23,14 +23,6 @@ export enum ActivityLevel {
 
 export class CreateUserProfileDto {
   @ApiProperty()
-  @IsString()
-  firstName: string;
-
-  @ApiProperty()
-  @IsString()
-  lastName: string;
-
-  @ApiProperty()
   @IsDateString()
   @IsOptional()
   birthDate: string;
@@ -83,4 +75,20 @@ export class CreateUserProfileDto {
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   dislikedFoods?: string[];
+
+  @ApiProperty()
+  @IsNumber()
+  calories: number;
+
+  @ApiProperty()
+  @IsNumber()
+  fats: number;
+
+  @ApiProperty()
+  @IsNumber()
+  carbs: number;
+
+  @ApiProperty()
+  @IsNumber()
+  proteins: number;
 }

@@ -19,12 +19,6 @@ export class UserProfile {
   @JoinColumn()
   user: User;
 
-  @Column()
-  firstName: string;
-
-  @Column()
-  lastName: string;
-
   @Column({ type: 'date', nullable: true })
   birthDate?: string;
 
@@ -40,7 +34,7 @@ export class UserProfile {
   @Column({ type: 'enum', enum: ActivityLevel, nullable: true })
   activityLevel?: ActivityLevel;
 
-  @Column({ nullable: true})
+  @Column({ nullable: true })
   goal?: string;
 
   @Column('float', { nullable: true })
@@ -63,4 +57,16 @@ export class UserProfile {
 
   @Column('text', { array: true, nullable: true })
   dislikedFoods?: string[];
+
+  @Column('float', { nullable: true })
+  calories?: number;
+
+  @Column('float', { nullable: true })
+  fats?: number;
+
+  @Column('float', { nullable: true })
+  carbs?: number;
+
+  @Column('float', { nullable: true })
+  proteins?: number;
 }

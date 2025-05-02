@@ -29,19 +29,29 @@ export class UsersService extends BaseService<User> {
     if (existingUser) {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
+
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
       return await super.create({
         email: createUserDto.email,
         password: hashedPassword,
+        name: createUserDto.name,
       });
     } catch (error) {
       throw new BadRequestException(
-        `Ошибка создания пользователя ${error.message}`,
+        `Ошибка создания пользователя: ${error.message}`,
       );
     }
   }
+  async getMe(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
 
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    return user;
+  }
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { email } });
 
@@ -62,7 +72,9 @@ export class UsersService extends BaseService<User> {
     try {
       return await this.updateOrThrow({ id }, updateUserDto);
     } catch (error) {
-      throw new BadRequestException('Ошибка обновления пользователя');
+      throw new BadRequestException(
+        `Ошибка обновления пользователя: ${error.message}`,
+      );
     }
   }
 
@@ -76,7 +88,9 @@ export class UsersService extends BaseService<User> {
     try {
       await this.removeOrThrow({ id });
     } catch (error) {
-      throw new BadRequestException('Ошибка удаления пользователя');
+      throw new BadRequestException(
+        `Ошибка удаления пользователя: ${error.message}`,
+      );
     }
   }
 }
