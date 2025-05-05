@@ -19,12 +19,6 @@ export class UserProfileResponseDto {
   @ApiProperty()
   activityLevel: string;
 
-  @ApiProperty()
-  goal: string;
-
-  @ApiPropertyOptional()
-  targetWeight?: number;
-
   @ApiPropertyOptional({ type: [String] })
   allergies?: string[];
 

@@ -40,16 +40,6 @@ export class UpdateUserProfileDto extends PartialType(CreateUserProfileDto) {
   @IsEnum(ActivityLevel)
   activityLevel?: ActivityLevel;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  goal?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  targetWeight?: number;
-
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   @IsArray()

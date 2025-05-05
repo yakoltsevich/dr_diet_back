@@ -43,15 +43,6 @@ export class CreateUserProfileDto {
   @IsEnum(ActivityLevel)
   activityLevel: ActivityLevel;
 
-  @ApiProperty()
-  @IsString()
-  goal: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  targetWeight?: number;
-
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   allergies?: string[];

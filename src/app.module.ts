@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { UserProfileModule } from './user-profile/user-profile.module';
 import { MenuModule } from './menu/menu.module';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
   imports: [

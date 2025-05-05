@@ -12,47 +12,56 @@ export class MenuDay {
   @Column()
   day: number;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: false })
   breakfast: {
     dish: string;
-    recipe: string;
-    total: {
+    recipe?: {
+      ingredients: { item: string; amount: string }[];
+      steps: string[];
+    } | null;
+    total?: {
       calories: number;
       protein: number;
       fat: number;
       carbs: number;
-    };
+    } | null;
   };
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: false })
   lunch: {
     dish: string;
-    recipe: string;
-    total: {
+    recipe?: {
+      ingredients: { item: string; amount: string }[];
+      steps: string[];
+    } | null;
+    total?: {
       calories: number;
       protein: number;
       fat: number;
       carbs: number;
-    };
+    } | null;
   };
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: false })
   dinner: {
     dish: string;
-    recipe: string;
-    total: {
+    recipe?: {
+      ingredients: { item: string; amount: string }[];
+      steps: string[];
+    } | null;
+    total?: {
       calories: number;
       protein: number;
       fat: number;
       carbs: number;
-    };
+    } | null;
   };
 
-  @Column({ type: 'jsonb' })
-  total: {
+  @Column({ type: 'jsonb', nullable: true })
+  total?: {
     calories: number;
     protein: number;
     fat: number;
     carbs: number;
-  };
+  } | null;
 }

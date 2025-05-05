@@ -34,12 +34,6 @@ export class UserProfile {
   @Column({ type: 'enum', enum: ActivityLevel, nullable: true })
   activityLevel?: ActivityLevel;
 
-  @Column({ nullable: true })
-  goal?: string;
-
-  @Column('float', { nullable: true })
-  targetWeight?: number;
-
   @Column('text', { array: true, nullable: true })
   allergies?: string[];
 

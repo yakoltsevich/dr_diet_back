@@ -8,11 +8,13 @@ import { MenuController } from './menu.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Menu } from './entities/menu.entity';
 import { MenuDay } from './entities/menu-day.entity';
-import { User } from '../users/entities/user.entity'; // добавить импорт
+import { User } from '../users/entities/user.entity';
+import { OpenaiModule } from '../openai/openai.module'; // добавить импорт
 
 @Module({
   controllers: [MenuController],
   imports: [
+    OpenaiModule,
     UserProfileModule,
     TypeOrmModule.forFeature([User, Menu, MenuDay]), // добавлен User
   ],
