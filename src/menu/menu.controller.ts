@@ -42,7 +42,7 @@ export class MenuController {
   @Post('generate')
   async generate(@Req() req: Request) {
     const userId = Number((req.user as any).id);
-    return this.menuService.generateMenuForUser(userId);
+    return this.menuService.generateWeeklyMenuForUser(userId);
   }
 
   // 📦 Получение последнего меню

@@ -322,6 +322,39 @@ export class MenuService {
     return menuDays;
   }
 
+  async generateWeeklyMenuForUser(userId: number): Promise<DailyMenu[]> {
+    const profile = await this.profileService.getMyProfile(userId);
+    const usedMealTitles: Set<string> = new Set();
+    const result: DailyMenu[] = [];
+
+    for (let day = 1; day <= 7; day++) {
+      const prompt = buildDailyMenuPrompt(
+        profile,
+        day,
+        Array.from(usedMealTitles),
+      );
+      const raw = await this.openaiService.chat(prompt);
+      const cleaned = raw.replace(/```json\s*([\s\S]*?)\s*```/, '$1').trim();
+
+      let parsed: DailyMenu;
+      try {
+        parsed = JSON.parse(cleaned);
+      } catch (e) {
+        console.error(`GPT ответ (день ${day}):`, raw);
+        throw new Error(`Ошибка парсинга OpenAI-ответа на день ${day}`);
+      }
+
+      // Добавляем названия всех блюд в список использованных
+      for (const meal of parsed.meals) {
+        usedMealTitles.add(meal.title.toLowerCase());
+      }
+
+      result.push(parsed);
+    }
+
+    return result;
+  }
+
   async generateMenuForUser(userId: number): Promise<DailyMenu> {
     const profile = await this.profileService.getMyProfile(userId);
     const prompt = buildDailyMenuPrompt(profile); // работает с UserProfileEntity или DTO
