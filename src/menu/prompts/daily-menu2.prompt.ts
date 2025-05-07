@@ -1,6 +1,6 @@
 import { UserProfile } from '../../user-profile/entities/user-profile.entity';
 
-export function buildDailyMenuPrompt(
+export function buildDailyMenuPrompt2(
   profile: UserProfile,
   day: number = 1,
   usedMeals: string[] = [],
@@ -76,6 +76,10 @@ ${usedMealsNote}
       "Добавить нарезанное яблоко."
     ]
   },
+      "calories": 400,
+      "proteins": 25,
+      "carbs": 30,
+      "fats": 15
     },
     {
       "type": "lunch",
@@ -85,7 +89,11 @@ ${usedMealsNote}
       "type": "dinner",
       ...
     }
-  ]
+  ],
+  "totalCalories": 1800,
+  "totalProteins": 120,
+  "totalCarbs": 400,
+  "totalFats": 100
 }
 \`\`\`
 
@@ -93,12 +101,14 @@ ${usedMealsNote}
 - \`ingredients\` — список ингредиентов с количеством;
 - \`steps\` — список шагов приготовления.
 Поле \`recipe\` не может быть пустым или равным null.
-Не используй шт ст.л. ч.л., только граммы
 
 Убедись, что:
 
 - В массиве "meals" содержится не менее трёх приёмов пищи: обязательно "breakfast","snack", "lunch", "dinner" и "afternoon_snack".
+- Каждый приём пищи содержит реалистичное количество калорий, белков, жиров и углеводов.
+- Сумма значений \`calories\`, \`proteins\`, \`fats\`, \`carbs\` по всем приёмам пищи **должна в точности соответствовать** итоговым полям.
 - Не используй ранее предложенные блюда: ${usedMealsNote}
+- Значения КБЖУ по каждому блюду должны быть **обоснованы конкретными ингредиентами**.
 - Формат ответа — **строго валидный JSON**, без пояснений, Markdown или дополнительного текста.
 `;
 }

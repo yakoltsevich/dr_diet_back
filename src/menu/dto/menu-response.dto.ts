@@ -18,11 +18,13 @@ class Meal {
   @ApiProperty({ example: 'Овсянка с ягодами' })
   dish: string;
 
-  @ApiProperty({
-    example:
-      '- Овсянка — 50 г\n- Ягоды — 100 г\nСварить овсянку, добавить ягоды',
-  })
-  recipe: string;
+  type: string;
+
+  @ApiProperty()
+  recipe: {
+    ingredients: { item: string; amount: string }[];
+    steps: string[];
+  };
 
   @ApiProperty({ type: NutritionInfo })
   total: NutritionInfo;
