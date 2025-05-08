@@ -37,20 +37,9 @@ export class DayMenuDto {
   })
   day: number;
 
-  @ApiProperty({ type: Meal })
-  breakfast: Meal;
-
-  @ApiProperty({ type: Meal })
-  lunch: Meal;
-
-  @ApiProperty({ type: Meal })
-  dinner: Meal;
+  @ApiProperty({ type: [Meal] })
+  meals: Meal[];
 
   @ApiProperty({ type: NutritionInfo })
   total: NutritionInfo;
-}
-
-export class MenuResponseDto {
-  @ApiProperty({ type: [DayMenuDto] })
-  menu: DayMenuDto[];
 }

@@ -13,8 +13,12 @@ export class MenuController {
     const userId = Number((req.user as any).id);
     return this.menuService.generateWeeklyMenuForUser(userId);
   }
+  @Post('fill-recipe')
+  async fillMenuRecipe(@Req() req: Request) {
+    const userId = Number((req.user as any).id);
+    return this.menuService.fillRecipesForMenu(userId);
+  }
 
-  // 📦 Получение последнего меню
   @Get()
   async getMenu(@Req() req: Request) {
     const userId = Number((req.user as any).id);

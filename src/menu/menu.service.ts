@@ -1,79 +1,120 @@
 import { Injectable } from '@nestjs/common';
 import { UserProfileService } from '../user-profile/user-profile.service';
-import { PromptBuilder } from './prompt-builder';
-import { OpenAiClient } from './openai.client';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Menu } from './entities/menu.entity';
 import { MenuDay } from './entities/menu-day.entity';
 import { OpenaiService } from '../openai/openai.service';
 import { DailyMenu } from './interfaces/daily-menu.interface';
-import { buildDailyMenuPrompt } from './prompts/daily-menu.prompt';
+import { MenuPromptBuilder } from './prompts/week-menu.prompt';
+import { transformMenuToCleanDays } from './utis/transformMenu.util';
 
 @Injectable()
 export class MenuService {
   constructor(
     private readonly profileService: UserProfileService,
-    private readonly promptBuilder: PromptBuilder,
-    private readonly openAiClient: OpenAiClient,
+    private readonly menuPromptBuilder: MenuPromptBuilder,
     private readonly openaiService: OpenaiService,
     @InjectRepository(Menu)
-    private readonly menuRepo: Repository<Menu>,
+    private readonly menuRepository: Repository<Menu>,
     @InjectRepository(MenuDay)
-    private readonly menuDayRepo: Repository<MenuDay>,
+    private readonly menuDayRepository: Repository<MenuDay>,
   ) {}
 
   async generateWeeklyMenuForUser(userId: number): Promise<DailyMenu[]> {
-    console.log('⏳ Получаем профиль пользователя...');
     const profile = await this.profileService.getMyProfile(userId);
-    console.log('✅ Профиль получен:', profile);
-    const usedMealTitles: Set<string> = new Set();
-    const result: DailyMenu[] = [];
+    const prompt = this.menuPromptBuilder.buildFullWeekMenuPrompt(profile);
+    const raw = await this.openaiService.chat(prompt);
+    const cleaned = raw.replace(/```json\s*([\s\S]*?)\s*```/, '$1').trim();
 
-    for (let day = 1; day <= 1; day++) {
-      console.log(`📤 Генерация промпта на день ${day}...`);
-      const prompt = buildDailyMenuPrompt(
-        profile,
-        day,
-        Array.from(usedMealTitles),
-      );
-
-      console.log('📡 Отправка запроса в OpenAI...');
-      const raw = await this.openaiService.chat(prompt);
-      console.log('📩 Ответ от OpenAI:', raw);
-      const cleaned = raw.replace(/```json\s*([\s\S]*?)\s*```/, '$1').trim();
-
-      let parsed: DailyMenu;
-      try {
-        parsed = JSON.parse(cleaned);
-      } catch (e) {
-        console.error(`GPT ответ (день ${day}):`, raw);
-        throw new Error(`Ошибка парсинга OpenAI-ответа на день ${day}`);
-      }
-
-      // Добавляем названия всех блюд в список использованных
-      for (const meal of parsed.meals) {
-        usedMealTitles.add(meal.title.toLowerCase());
-      }
-
-      result.push(parsed);
+    let parsed: DailyMenu[];
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch (e) {
+      console.error('GPT ответ (неделя):\n', raw);
+      throw new Error('Ошибка парсинга недельного меню');
     }
 
-    return result;
+    const menu = this.menuRepository.create({ user: { id: userId } as any });
+    await this.menuRepository.save(menu);
+
+    const menuDays = parsed.map((dayMenu) =>
+      this.menuDayRepository.create({
+        menu,
+        day: dayMenu.day,
+        meals: dayMenu.meals,
+      }),
+    );
+
+    await this.menuDayRepository.save(menuDays);
+    menu.days = menuDays;
+
+    return transformMenuToCleanDays(menu);
   }
 
-  async getSavedMenu(userId: number): Promise<MenuDay[] | null> {
-    const existingMenu = await this.menuRepo.findOne({
+  async fillRecipesForMenu(userId: number): Promise<DailyMenu[]> {
+    // Получаем последнее меню
+    let menu = await this.menuRepository.findOne({
       where: { user: { id: userId } },
       relations: ['days'],
       order: {
         createdAt: 'DESC',
-        days: {
-          day: 'ASC',
-        },
+        days: { day: 'ASC' },
       },
     });
 
-    return existingMenu?.days || null;
+    console.log('menu', !!menu);
+    if (!menu) {
+      await this.generateWeeklyMenuForUser(userId);
+      menu = await this.menuRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ['days'],
+        order: {
+          createdAt: 'DESC',
+          days: { day: 'ASC' },
+        },
+      });
+      if (!menu) throw new Error('Не удалось создать меню');
+    }
+
+    // Проходим по каждому блюду и дозаполняем рецепты
+    for (const day of menu.days) {
+      let isUpdated = false;
+
+      for (const meal of day.meals) {
+        if (meal.recipe && meal.recipe.ingredients?.length) continue;
+
+        const prompt = this.menuPromptBuilder.buildRecipePrompt(meal.title);
+        const raw = await this.openaiService.chat(prompt);
+        const cleaned = raw.replace(/```json\s*([\s\S]*?)\s*```/, '$1').trim();
+
+        try {
+          const parsed = JSON.parse(cleaned);
+          meal.recipe = parsed.recipe;
+          isUpdated = true;
+        } catch (e) {
+          console.error(`Ошибка парсинга рецепта для "${meal.title}"`, raw);
+        }
+      }
+
+      if (isUpdated) {
+        await this.menuDayRepository.save(day);
+      }
+    }
+
+    return transformMenuToCleanDays(menu);
+  }
+
+  async getSavedMenu(userId: number): Promise<DailyMenu[] | null> {
+    const menu = await this.menuRepository.findOne({
+      where: { user: { id: userId } },
+      relations: ['days'],
+      order: {
+        createdAt: 'DESC',
+        days: { day: 'ASC' },
+      },
+    });
+
+    return menu ? transformMenuToCleanDays(menu) : null;
   }
 }
