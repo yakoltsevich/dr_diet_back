@@ -1,4 +1,3 @@
-// src/ingredient/ingredient.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -20,23 +19,28 @@ export class IngredientService {
 
     const prompt = buildIngredientPrompt(name);
     const raw = await this.openaiService.chat(prompt);
-    const match = raw.match(
-      /калории:\s*([\d.]+).*белки:\s*([\d.]+).*жиры:\s*([\d.]+).*углеводы:\s*([\d.]+)/i,
-    );
 
-    if (!match) {
-      throw new Error(
-        `Не удалось распарсить нутриенты для "${name}". Ответ: ${raw}`,
-      );
+    let parsed: any;
+    try {
+      const cleaned = raw.replace(/```json\s*([\s\S]*?)\s*```/, '$1').trim();
+      parsed = JSON.parse(cleaned);
+    } catch (e) {
+      console.error(`❌ Невалидный JSON от GPT для "${name}":\n${raw}`);
+      throw new Error(`Невалидный JSON от GPT для "${name}"`);
     }
 
-    const [_, calories, protein, fat, carbs] = match.map(Number);
+    const { calories, proteins, fats, carbs } = parsed;
+
+    if ([calories, proteins, fats, carbs].some((v) => typeof v !== 'number')) {
+      console.error(`❌ Неполные нутриенты для "${name}":`, parsed);
+      throw new Error(`Некорректные значения нутриентов для "${name}"`);
+    }
 
     const ingredient = this.ingredientRepo.create({
       name,
       calories,
-      protein,
-      fat,
+      protein: proteins,
+      fat: fats,
       carbs,
     });
 

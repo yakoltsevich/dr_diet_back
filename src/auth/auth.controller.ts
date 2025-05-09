@@ -32,8 +32,9 @@ export class AuthController {
     }
 
     const payload = { sub: user.id, email: user.email };
-    const access_token = await this.jwtService.signAsync(payload);
-
+    const access_token = await this.jwtService.signAsync(payload, {
+      expiresIn: '30d', // токен будет действителен 30 дней
+    });
     return { access_token };
   }
   // @Post('register')

@@ -7,12 +7,14 @@ import { Menu } from './entities/menu.entity';
 import { MenuDay } from './entities/menu-day.entity';
 import { User } from '../users/entities/user.entity';
 import { OpenaiModule } from '../openai/openai.module';
-import { MenuPromptBuilder } from './prompts/week-menu.prompt'; // добавить импорт
+import { MenuPromptBuilder } from './prompts/week-menu.prompt';
+import { IngredientModule } from '../ingredient/ingredient.module'; // добавить импорт
 
 @Module({
   controllers: [MenuController],
   imports: [
     OpenaiModule,
+    IngredientModule,
     UserProfileModule,
     TypeOrmModule.forFeature([User, Menu, MenuDay]), // добавлен User
   ],

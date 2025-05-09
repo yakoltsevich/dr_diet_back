@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { MenuService } from './menu.service';
 import { Request } from 'express';
@@ -13,10 +13,23 @@ export class MenuController {
     const userId = Number((req.user as any).id);
     return this.menuService.generateWeeklyMenuForUser(userId);
   }
+
   @Post('fill-recipe')
   async fillMenuRecipe(@Req() req: Request) {
     const userId = Number((req.user as any).id);
     return this.menuService.fillRecipesForMenu(userId);
+  }
+
+  // menu.controller.ts
+  @Post('calculate-nutrition')
+  async calculateNutrition(@Req() req: Request) {
+    const userId = Number((req.user as any).id);
+    const menu = await this.menuService.calculateMenuNutrition(userId);
+
+    return {
+      message: 'КБЖУ рассчитано успешно',
+      menu,
+    };
   }
 
   @Get()
