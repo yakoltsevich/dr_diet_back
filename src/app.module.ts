@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserProfileModule } from './user-profile/user-profile.module';
 import { MenuModule } from './menu/menu.module';
 import { OpenaiModule } from './openai/openai.module';
+import { LegalModule } from './legal/legal.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { OpenaiModule } from './openai/openai.module';
     UsersModule,
     AuthModule,
     UserProfileModule,
-    MenuModule, // Подключаем AuthModule
+    MenuModule,
+    LegalModule, // Подключаем AuthModule
     // другие модули
   ],
 })
