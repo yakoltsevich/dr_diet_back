@@ -1,25 +1,25 @@
 {
-  "title": "Политика конфиденциальности",
+  "title": "Privacy Policy",
   "lastUpdated": "2025-05-01",
   "sections": [
     {
-      "heading": "1. Какие данные мы собираем",
+      "heading": "1. What data we collect",
       "content": [
-        "Email и имя (при регистрации)",
-        "IP-адрес, тип устройства, cookies"
+        "Email and name (during registration)",
+        "IP address, device type, cookies"
       ]
     },
     {
-      "heading": "2. Как мы используем данные",
+      "heading": "2. How we use the data",
       "content": [
-        "Для авторизации и доступа к профилю",
-        "Для аналитики и улучшения сервиса"
+        "For authentication and access to your profile",
+        "For analytics and service improvement"
       ]
     },
     {
-      "heading": "3. Контакты",
+      "heading": "3. Contact",
       "content": [
-        "По вопросам пишите на support@drdiet.app"
+        "For inquiries, contact support@drdiet.app"
       ]
     }
   ]

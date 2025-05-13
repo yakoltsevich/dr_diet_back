@@ -68,7 +68,6 @@ export class GroceriesService {
 
     const grocery = this.groceryRepo.create({
       items,
-      title: 'Автоматически созданный список покупок',
     });
 
     return this.groceryRepo.save(grocery);

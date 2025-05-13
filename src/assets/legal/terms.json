@@ -1,37 +1,37 @@
 {
-  "title": "Пользовательское соглашение",
+  "title": "Terms of Use",
   "lastUpdated": "2025-05-01",
   "sections": [
     {
-      "heading": "1. Условия использования",
+      "heading": "1. Terms of Use",
       "content": [
-        "Вы обязуетесь использовать сервис Dr Diet только в законных целях.",
-        "Вы несёте ответственность за сохранность своих учетных данных."
+        "You agree to use the Dr Diet service only for lawful purposes.",
+        "You are responsible for keeping your account credentials secure."
       ]
     },
     {
-      "heading": "2. Ограничение ответственности",
+      "heading": "2. Limitation of Liability",
       "content": [
-        "Сервис предоставляется 'как есть'.",
-        "Мы не гарантируем постоянную доступность или отсутствие ошибок, но стремимся к стабильности и безопасности."
+        "The service is provided 'as is'.",
+        "We do not guarantee uninterrupted access or error-free operation, but we strive for stability and security."
       ]
     },
     {
-      "heading": "3. Блокировка аккаунта",
+      "heading": "3. Account Suspension",
       "content": [
-        "Мы можем временно или навсегда ограничить доступ к сервису в случае нарушений или подозрительной активности."
+        "We may temporarily or permanently restrict access to the service in case of violations or suspicious activity."
       ]
     },
     {
-      "heading": "4. Изменения условий",
+      "heading": "4. Changes to the Terms",
       "content": [
-        "Мы оставляем за собой право обновлять это соглашение. Обновления публикуются на этой странице."
+        "We reserve the right to update these terms. Updates will be posted on this page."
       ]
     },
     {
-      "heading": "5. Контакты",
+      "heading": "5. Contact",
       "content": [
-        "По всем вопросам обращайтесь: support@drdiet.app"
+        "For all inquiries, please contact: support@drdiet.app"
       ]
     }
   ]
