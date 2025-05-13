@@ -13,7 +13,7 @@ export class Menu {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.menus, { eager: true })
+  @ManyToOne(() => User, (user) => user.menu, { eager: true })
   user: User;
 
   @OneToMany(() => MenuDay, (menuDay) => menuDay.menu, {

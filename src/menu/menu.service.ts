@@ -5,11 +5,10 @@ import { Repository } from 'typeorm';
 import { Menu } from './entities/menu.entity';
 import { MenuDay } from './entities/menu-day.entity';
 import { OpenaiService } from '../openai/openai.service';
-import { DailyMenu } from './interfaces/daily-menu.interface';
+import { DailyMenu, Ingredient } from './interfaces/daily-menu.interface';
 import { MenuPromptBuilder } from './prompts/week-menu.prompt';
-import { transformMenuToCleanDays } from './utis/transformMenu.util';
+import { transformMenuToCleanDays } from './utils/transformMenu.util';
 import { IngredientService } from '../ingredient/ingredient.service';
-
 import { mealCalorieDistribution } from './constants/meal-targets';
 import { scaleRecipeByTargetCalories } from './utils/scale-recipe.util';
 
@@ -212,7 +211,6 @@ export class MenuService {
       throw error;
     }
   }
-
   async getSavedMenu(userId: number): Promise<DailyMenu[] | null> {
     const menu = await this.menuRepository.findOne({
       where: { user: { id: userId } },

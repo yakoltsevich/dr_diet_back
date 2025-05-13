@@ -1,13 +1,14 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Menu } from '../../menu/entities/menu.entity';
+import { Grocery } from '../../groceries/entities/grocery.entity'; // добавить импорт
 
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true }) // ← добавить это
+  @Column({ nullable: true })
   name: string;
 
   @Column({ unique: true })
@@ -16,10 +17,13 @@ export class User {
   @Column({ nullable: true })
   googleId: string;
 
-  @Exclude() // Скрываем пароль при сериализации
+  @Exclude()
   @Column()
   password: string;
 
   @OneToMany(() => Menu, (menu) => menu.user)
-  menus: Menu[];
+  menu: Menu[];
+
+  @OneToMany(() => Grocery, (grocery) => grocery.user) // ← новая связь
+  groceries: Grocery[];
 }

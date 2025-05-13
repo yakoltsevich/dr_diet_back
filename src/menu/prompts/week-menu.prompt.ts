@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserProfile } from '../../user-profile/entities/user-profile.entity';
-import { getAge } from '../utis/get-age.util';
+import { getAge } from '../utils/get-age.util';
 
 @Injectable()
 export class MenuPromptBuilder {

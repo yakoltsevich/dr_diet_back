@@ -33,6 +33,23 @@ export class MenuController {
   }
 
   @Get()
+  async getShoppingList(@Req() req: Request) {
+    const userId = Number((req.user as any).id);
+    const saved = await this.menuService.getSavedMenu(userId);
+
+    if (!saved) {
+      return {
+        message: 'Меню не найдено',
+        menu: [],
+      };
+    }
+
+    return {
+      message: 'Меню успешно получено',
+      menu: saved,
+    };
+  }
+  @Get()
   async getMenu(@Req() req: Request) {
     const userId = Number((req.user as any).id);
     const saved = await this.menuService.getSavedMenu(userId);

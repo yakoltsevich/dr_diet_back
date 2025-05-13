@@ -6,8 +6,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { UserProfileModule } from './user-profile/user-profile.module';
 import { MenuModule } from './menu/menu.module';
-import { OpenaiModule } from './openai/openai.module';
 import { LegalModule } from './legal/legal.module';
+import { GroceriesModule } from './groceries/groceries.module';
 
 @Module({
   imports: [
@@ -29,8 +29,8 @@ import { LegalModule } from './legal/legal.module';
     AuthModule,
     UserProfileModule,
     MenuModule,
-    LegalModule, // Подключаем AuthModule
-    // другие модули
+    LegalModule,
+    GroceriesModule,
   ],
 })
 export class AppModule {}
