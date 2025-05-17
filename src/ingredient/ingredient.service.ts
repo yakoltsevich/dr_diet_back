@@ -1,17 +1,21 @@
+// src/ingredient/ingredient.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ingredient } from './entities/ingredient.entity';
 import { OpenaiService } from '../openai/openai.service';
 import { buildIngredientPrompt } from './prompts/ingredient.prompt';
+import { BaseService } from '../common/base/base.service';
 
 @Injectable()
-export class IngredientService {
+export class IngredientService extends BaseService<Ingredient> {
   constructor(
     @InjectRepository(Ingredient)
     private readonly ingredientRepo: Repository<Ingredient>,
     private readonly openaiService: OpenaiService,
-  ) {}
+  ) {
+    super(ingredientRepo);
+  }
 
   async getOrCreateIngredient(name: string): Promise<Ingredient> {
     const existing = await this.ingredientRepo.findOne({ where: { name } });

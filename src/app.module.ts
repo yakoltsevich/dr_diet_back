@@ -8,6 +8,7 @@ import { UserProfileModule } from './user-profile/user-profile.module';
 import { MenuModule } from './menu/menu.module';
 import { LegalModule } from './legal/legal.module';
 import { GroceriesModule } from './groceries/groceries.module';
+import { MealModule } from './meal/meal.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { GroceriesModule } from './groceries/groceries.module';
     MenuModule,
     LegalModule,
     GroceriesModule,
+    MealModule,
   ],
 })
 export class AppModule {}
