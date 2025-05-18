@@ -12,20 +12,18 @@ import { MealModule } from './meal/meal.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true, // Делаем .env переменные доступными везде
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost', // или 'db', если используешь Docker
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'testdb',
-      autoLoadEntities: true, // автоматически подключает Entity
-      synchronize: true, // true для разработки (в проде ставь false)
+      url: process.env.DATABASE_URL, // ✅ Используем переменную окружения от Render
+      autoLoadEntities: true,
+      synchronize: true, // ⚠️ Только для разработки, в проде — использовать миграции!
     }),
+
     TypeOrmModule.forFeature([User]),
-    ConfigModule.forRoot({
-      isGlobal: true, // доступен во всем приложении
-    }),
     UsersModule,
     AuthModule,
     UserProfileModule,
@@ -36,3 +34,17 @@ import { MealModule } from './meal/meal.module';
   ],
 })
 export class AppModule {}
+// TypeOrmModule.forRoot({
+//   type: 'postgres',
+//   host: 'localhost', // или 'db', если используешь Docker
+//   port: 5432,
+//   username: 'postgres',
+//   password: 'postgres',
+//   database: 'testdb',
+//   autoLoadEntities: true, // автоматически подключает Entity
+//   synchronize: true, // true для разработки (в проде ставь false)
+// }),
+//   TypeOrmModule.forFeature([User]),
+//   ConfigModule.forRoot({
+//     isGlobal: true, // доступен во всем приложении
+//   }),
