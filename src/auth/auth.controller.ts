@@ -46,11 +46,12 @@ export class AuthController {
 
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV !== 'development',
-      sameSite: 'lax', // в dev лучше lax
-      path: '/', // ❗обязательно
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: process.env.NODE_ENV !== 'development', // true на Render (HTTPS)
+      sameSite: process.env.NODE_ENV !== 'development' ? 'none' : 'lax', // 💥 ключевой момент
+      path: '/',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 дней
     });
+
 
     return { access_token: accessToken };
   }
