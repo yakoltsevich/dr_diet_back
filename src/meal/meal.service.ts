@@ -3,7 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Meal } from './entities/meal.entity';
 import { MealIngredient } from './entities/meal-ingredient.entity';
-import { Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Ingredient } from '../ingredient/entities/ingredient.entity';
 import { CreateMealDto } from './dto/create-meal.dto';
 import { UpdateMealDto } from './dto/update-meal.dto';
@@ -19,8 +19,28 @@ export class MealService {
     private readonly ingredientRepo: Repository<Ingredient>,
   ) {}
 
-  async findAll(): Promise<Meal[]> {
-    return this.mealRepo.find({ relations: ['ingredients'] });
+  async findAll(filters?: {
+    dateFrom?: string;
+    dateTo?: string;
+  }): Promise<Meal[]> {
+    const where: any = {};
+
+    if (filters?.dateFrom && filters?.dateTo) {
+      where.date = Between(
+        new Date(filters.dateFrom),
+        new Date(filters.dateTo),
+      );
+    } else if (filters?.dateFrom) {
+      where.date = MoreThanOrEqual(new Date(filters.dateFrom));
+    } else if (filters?.dateTo) {
+      where.date = LessThanOrEqual(new Date(filters.dateTo));
+    }
+
+    return this.mealRepo.find({
+      where,
+      relations: ['ingredients', 'ingredients.ingredient'],
+      order: { date: 'DESC' },
+    });
   }
 
   async findOne(id: number): Promise<Meal> {

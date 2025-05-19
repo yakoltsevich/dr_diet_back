@@ -7,7 +7,7 @@ import {
   Delete,
   Param,
   Body,
-  ParseIntPipe,
+  ParseIntPipe, Query,
 } from '@nestjs/common';
 import { MealService } from './meal.service';
 import { CreateMealDto } from './dto/create-meal.dto';
@@ -18,8 +18,11 @@ export class MealController {
   constructor(private readonly mealService: MealService) {}
 
   @Get()
-  findAll() {
-    return this.mealService.findAll();
+  findAll(
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+  ) {
+    return this.mealService.findAll({ dateFrom, dateTo });
   }
 
   @Get(':id')
