@@ -11,7 +11,11 @@ async function bootstrap() {
   app.use(cookieParser()); // ✅ ← вот это ключ
 
   app.enableCors({
-    origin:  process.env.FRONTEND_URL ?? 'http://localhost:3000',
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      process.env.FRONTEND_URL,
+    ],
     credentials: true,
   });
 
