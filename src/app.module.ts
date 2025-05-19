@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
@@ -10,18 +10,34 @@ import { LegalModule } from './legal/legal.module';
 import { GroceriesModule } from './groceries/groceries.module';
 import { MealModule } from './meal/meal.module';
 
+const localConfig: TypeOrmModuleOptions = {
+  type: 'postgres',
+  url: process.env.DATABASE_URL, // ✅ Используем переменную окружения от Render
+  username: 'dr_diet_db_user',
+  password: process.env.DATABASE_PASSWORD,
+  database: 'dr_diet_db',
+  autoLoadEntities: true, // автоматически подключает Entity
+  synchronize: true, // true для разработки (в проде ставь false)
+  ssl: {
+    rejectUnauthorized: false,
+  },
+};
+const prodConfig: TypeOrmModuleOptions = {
+  type: 'postgres',
+  url: process.env.DATABASE_URL, // ✅ Используем переменную окружения от Render
+  autoLoadEntities: true,
+  synchronize: true, // ⚠️ Только для разработки, в проде — использовать миграции!
+};
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Делаем .env переменные доступными везде
     }),
 
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      url: process.env.DATABASE_URL, // ✅ Используем переменную окружения от Render
-      autoLoadEntities: true,
-      synchronize: true, // ⚠️ Только для разработки, в проде — использовать миграции!
-    }),
+    TypeOrmModule.forRoot(
+      process.env.NODE_ENV === 'production' ? prodConfig : localConfig,
+    ),
 
     TypeOrmModule.forFeature([User]),
     UsersModule,
@@ -34,17 +50,3 @@ import { MealModule } from './meal/meal.module';
   ],
 })
 export class AppModule {}
-// TypeOrmModule.forRoot({
-//   type: 'postgres',
-//   host: 'localhost', // или 'db', если используешь Docker
-//   port: 5432,
-//   username: 'postgres',
-//   password: 'postgres',
-//   database: 'testdb',
-//   autoLoadEntities: true, // автоматически подключает Entity
-//   synchronize: true, // true для разработки (в проде ставь false)
-// }),
-//   TypeOrmModule.forFeature([User]),
-//   ConfigModule.forRoot({
-//     isGlobal: true, // доступен во всем приложении
-//   }),
