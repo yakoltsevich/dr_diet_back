@@ -1,5 +1,6 @@
 // src/ingredient/dto/create-ingredient.dto.ts
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { CreatedBy } from '../entities/ingredient.entity';
 
 export class CreateIngredientDto {
   @IsString()
@@ -17,4 +18,7 @@ export class CreateIngredientDto {
 
   @IsNumber()
   carbs: number;
+
+  @IsEnum(CreatedBy)
+  createdBy: CreatedBy;
 }

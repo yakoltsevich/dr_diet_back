@@ -1,8 +1,7 @@
-// src/ingredient/ingredient.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Ingredient } from './entities/ingredient.entity';
+import { Ingredient, CreatedBy } from './entities/ingredient.entity'; // импорт enum
 import { OpenaiService } from '../openai/openai.service';
 import { buildIngredientPrompt } from './prompts/ingredient.prompt';
 import { BaseService } from '../common/base/base.service';
@@ -46,6 +45,7 @@ export class IngredientService extends BaseService<Ingredient> {
       protein: proteins,
       fat: fats,
       carbs,
+      createdBy: CreatedBy.ai,
     });
 
     return await this.ingredientRepo.save(ingredient);

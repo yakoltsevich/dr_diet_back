@@ -9,10 +9,16 @@ import { MenuModule } from './menu/menu.module';
 import { LegalModule } from './legal/legal.module';
 import { GroceriesModule } from './groceries/groceries.module';
 import { MealModule } from './meal/meal.module';
+import { HealthModule } from './health/health.module';
+
+const baseConfig: TypeOrmModuleOptions = {
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  autoLoadEntities: true, // ✅ Используем переменную окружения от Render
+};
 
 const localConfig: TypeOrmModuleOptions = {
-  type: 'postgres',
-  url: process.env.DATABASE_URL, // ✅ Используем переменную окружения от Render
+  ...baseConfig,
   username: 'dr_diet_db_user',
   password: process.env.DATABASE_PASSWORD,
   database: 'dr_diet_db',
@@ -23,10 +29,8 @@ const localConfig: TypeOrmModuleOptions = {
   },
 };
 const prodConfig: TypeOrmModuleOptions = {
-  type: 'postgres',
-  url: process.env.DATABASE_URL, // ✅ Используем переменную окружения от Render
-  autoLoadEntities: true,
-  synchronize: true, // ⚠️ Только для разработки, в проде — использовать миграции!
+  ...baseConfig,
+  synchronize: false, // ⚠️ Только для разработки, в проде — использовать миграции!
 };
 
 @Module({
@@ -47,6 +51,7 @@ const prodConfig: TypeOrmModuleOptions = {
     LegalModule,
     GroceriesModule,
     MealModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
