@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { IngredientService } from './ingredient.service';
 import { CreateIngredientDto } from './dto/create-ingredient.dto';
@@ -17,8 +18,11 @@ export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
 
   @Get()
-  findAll() {
-    return this.ingredientService.findAll();
+  findAll(@Query('offset') offset = '0', @Query('limit') limit = '20') {
+    return this.ingredientService.findAllPaginated({
+      offset: parseInt(offset),
+      limit: parseInt(limit),
+    });
   }
 
   @Get(':id')

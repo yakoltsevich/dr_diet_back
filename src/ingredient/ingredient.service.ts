@@ -10,14 +10,16 @@ import { BaseService } from '../common/base/base.service';
 export class IngredientService extends BaseService<Ingredient> {
   constructor(
     @InjectRepository(Ingredient)
-    private readonly ingredientRepo: Repository<Ingredient>,
+    private readonly ingredientRepository: Repository<Ingredient>,
     private readonly openaiService: OpenaiService,
   ) {
-    super(ingredientRepo);
+    super(ingredientRepository);
   }
 
   async getOrCreateIngredient(name: string): Promise<Ingredient> {
-    const existing = await this.ingredientRepo.findOne({ where: { name } });
+    const existing = await this.ingredientRepository.findOne({
+      where: { name },
+    });
     if (existing) return existing;
 
     const prompt = buildIngredientPrompt(name);
@@ -39,7 +41,7 @@ export class IngredientService extends BaseService<Ingredient> {
       throw new Error(`Некорректные значения нутриентов для "${name}"`);
     }
 
-    const ingredient = this.ingredientRepo.create({
+    const ingredient = this.ingredientRepository.create({
       name,
       calories,
       protein: proteins,
@@ -48,6 +50,28 @@ export class IngredientService extends BaseService<Ingredient> {
       createdBy: CreatedBy.ai,
     });
 
-    return await this.ingredientRepo.save(ingredient);
+    return await this.ingredientRepository.save(ingredient);
+  }
+
+  async findAllPaginated({
+    offset = 0,
+    limit = 20,
+  }: {
+    offset: number;
+    limit: number;
+  }) {
+    const [items, total] = await this.ingredientRepository.findAndCount({
+      skip: offset,
+      take: limit,
+      order: { name: 'ASC' },
+    });
+
+    return {
+      data: items,
+      total,
+      offset,
+      limit,
+      hasMore: offset + limit < total,
+    };
   }
 }
