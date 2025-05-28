@@ -18,10 +18,15 @@ export class IngredientController {
   constructor(private readonly ingredientService: IngredientService) {}
 
   @Get()
-  findAll(@Query('offset') offset = '0', @Query('limit') limit = '20') {
+  findAll(
+    @Query('offset') offset = '0',
+    @Query('limit') limit = '20',
+    @Query('name') name?: string,
+  ) {
     return this.ingredientService.findAllPaginated({
       offset: parseInt(offset),
       limit: parseInt(limit),
+      name,
     });
   }
 

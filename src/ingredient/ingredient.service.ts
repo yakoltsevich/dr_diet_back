@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Ingredient, CreatedBy } from './entities/ingredient.entity'; // импорт enum
 import { OpenaiService } from '../openai/openai.service';
 import { buildIngredientPrompt } from './prompts/ingredient.prompt';
@@ -56,11 +56,16 @@ export class IngredientService extends BaseService<Ingredient> {
   async findAllPaginated({
     offset = 0,
     limit = 20,
+    name,
   }: {
     offset: number;
     limit: number;
+    name?: string;
   }) {
+    const where = name ? { name: ILike(`%${name}%`) } : {};
+
     const [items, total] = await this.ingredientRepository.findAndCount({
+      where,
       skip: offset,
       take: limit,
       order: { name: 'ASC' },
