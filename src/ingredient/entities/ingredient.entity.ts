@@ -6,6 +6,7 @@ export enum CreatedBy {
   admin = 'admin',
   ai = 'ai',
 }
+
 @Entity()
 @Unique(['name'])
 export class Ingredient {
@@ -33,4 +34,7 @@ export class Ingredient {
     default: CreatedBy.ai,
   })
   createdBy: CreatedBy;
+
+  @Column({ type: 'varchar', unique: true, nullable: true })
+  barcode: string;
 }
