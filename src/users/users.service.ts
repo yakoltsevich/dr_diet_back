@@ -11,12 +11,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BaseService } from '../common/base/base.service';
 import * as bcrypt from 'bcryptjs';
+import { UserSettingsService } from '../user-settings/user-settings.service';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly userSettingsService: UserSettingsService,
   ) {
     super(userRepository);
   }
@@ -32,17 +34,23 @@ export class UsersService extends BaseService<User> {
 
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-      return await super.create({
+      const user = await super.create({
         email: createUserDto.email,
         password: hashedPassword,
         name: createUserDto.name,
       });
+
+      // 🟢 Создаём настройки по умолчанию
+      await this.userSettingsService.createDefaultForUser(user);
+
+      return user;
     } catch (error) {
       throw new BadRequestException(
         `Ошибка создания пользователя: ${error.message}`,
       );
     }
   }
+
   async getMe(userId: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
@@ -52,6 +60,7 @@ export class UsersService extends BaseService<User> {
 
     return user;
   }
+
   async findByEmail(email: string): Promise<User> {
     const user = await this.userRepository.findOne({ where: { email } });
 

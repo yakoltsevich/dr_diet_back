@@ -11,6 +11,7 @@ import { GroceriesModule } from './groceries/groceries.module';
 import { MealModule } from './meal/meal.module';
 import { HealthModule } from './health/health.module';
 import { BarcodeModule } from './barcode/barcode.module';
+import { UserSettingsModule } from './user-settings/user-settings.module';
 
 const baseConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -53,6 +54,7 @@ const prodConfig: TypeOrmModuleOptions = {
     GroceriesModule,
     MealModule,
     HealthModule,
+    UserSettingsModule,
     BarcodeModule,
   ],
 })
