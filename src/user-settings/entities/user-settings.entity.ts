@@ -12,13 +12,16 @@ export class UserSettings {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn()
+  @Column()
+  userId: number;
+
+  @OneToOne(() => User, (user) => user.settings, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ default: 'en' })
   language: string;
 
   @Column('simple-array', { default: '' })
-  ingredientSources: string[]; // Пример: ['usda', 'fatsecret', 'manual']
+  ingredientSources: string[];
 }

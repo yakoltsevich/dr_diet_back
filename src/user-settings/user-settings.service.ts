@@ -18,7 +18,10 @@ export class UserSettingsService {
       relations: ['user'],
     });
     if (!settings) throw new NotFoundException('Settings not found');
-    return settings;
+    return {
+      language: settings.language,
+      ingredientSources: settings.ingredientSources,
+    };
   }
 
   async update(userId: number, dto: UpdateUserSettingsDto) {

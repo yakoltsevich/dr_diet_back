@@ -1,7 +1,14 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Menu } from '../../menu/entities/menu.entity';
 import { Grocery } from '../../groceries/entities/grocery.entity'; // добавить импорт
+import { UserSettings } from '../../user-settings/entities/user-settings.entity';
 
 @Entity('users')
 export class User {
@@ -24,6 +31,13 @@ export class User {
   @OneToMany(() => Menu, (menu) => menu.user)
   menu: Menu[];
 
-  @OneToMany(() => Grocery, (grocery) => grocery.user) // ← новая связь
+  @OneToMany(() => Grocery, (grocery) => grocery.user)
   groceries: Grocery[];
+
+  // 🆕 Связь с настройками пользователя
+  @OneToOne(() => UserSettings, (settings) => settings.user, {
+    cascade: true,
+    eager: true, // если хочешь загружать по умолчанию
+  })
+  settings: UserSettings;
 }
