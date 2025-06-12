@@ -25,8 +25,20 @@ export class UserSettingsService {
   }
 
   async update(userId: number, dto: UpdateUserSettingsDto) {
-    const settings = await this.getByUser(userId);
-    Object.assign(settings, dto);
+    let settings = await this.settingsRepo.findOne({
+      where: { user: { id: userId } },
+      relations: ['user'],
+    });
+    console.log('settings old', settings);
+    if (!settings) {
+      settings = this.settingsRepo.create({
+        ...dto,
+        user: { id: userId } as any, // 💡 Объект-заглушка с ID
+      });
+    } else {
+      Object.assign(settings, dto);
+    }
+
     return this.settingsRepo.save(settings);
   }
 

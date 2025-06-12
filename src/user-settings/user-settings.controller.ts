@@ -24,6 +24,11 @@ export class UserSettingsController {
     @Req() req: AuthenticatedRequest,
     @Body() dto: UpdateUserSettingsDto,
   ) {
-    return this.settingsService.update(req.user.id, dto);
+    try {
+      console.log('dto', dto);
+      return this.settingsService.update(req.user.id, dto);
+    } catch (error) {
+      return 'asdasdasd';
+    }
   }
 }
