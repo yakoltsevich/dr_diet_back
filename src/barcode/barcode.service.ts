@@ -34,45 +34,60 @@ export class BarcodeService {
     userId: number,
   ): Promise<Partial<Ingredient>> {
     // 1. Получаем язык пользователя
-    const settings = await this.userSettingsService.getByUser(userId);
-    const language = settings.language || 'en';
+    try {
+      const settings = await this.userSettingsService.getByUser(userId);
+      const language = settings.language || 'en';
 
-    // 2. Ищем в БД
-    const existing = await this.ingredientRepo.findOne({ where: { barcode } });
-    if (existing) {
+      // 2. Ищем в БД
+      const existing = await this.ingredientRepo.findOne({
+        where: { barcode },
+      });
+      if (existing) {
+        return {
+          id: existing.id,
+          name: existing.name,
+          barcode: existing.barcode,
+          calories: existing.calories,
+          protein: existing.protein,
+          fat: existing.fat,
+          carbs: existing.carbs,
+        };
+      }
+
+      // 3. Запрос в Open Food Facts c языком
+      const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json?lc=${language}`;
+      const response = await fetch(url);
+      const json = (await response.json()) as OpenFoodFactsResponse;
+
+      if (json.status !== 1 || !json.product) {
+        throw new NotFoundException('Продукт не найден');
+      }
+
+      const product = json.product;
+      const name =
+        product.product_name || product.generic_name || 'Без названия';
+      const nutriments = product.nutriments;
+
+      const round1 = (v: number | undefined) => Math.round((v || 0) * 10) / 10;
+
       return {
-        id: existing.id,
-        name: existing.name,
-        barcode: existing.barcode,
-        calories: existing.calories,
-        protein: existing.protein,
-        fat: existing.fat,
-        carbs: existing.carbs,
+        name: name.trim(),
+        barcode,
+        calories: round1(nutriments['energy-kcal_100g']),
+        protein: round1(nutriments['proteins_100g']),
+        fat: round1(nutriments['fat_100g']),
+        carbs: round1(nutriments['carbohydrates_100g']),
+      };
+    } catch (error) {
+      console.log('error', error);
+      return {
+        name: 'sad',
+        barcode,
+        calories: 0,
+        protein: 0,
+        fat: 0,
+        carbs: 0,
       };
     }
-
-    // 3. Запрос в Open Food Facts c языком
-    const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json?lc=${language}`;
-    const response = await fetch(url);
-    const json = (await response.json()) as OpenFoodFactsResponse;
-
-    if (json.status !== 1 || !json.product) {
-      throw new NotFoundException('Продукт не найден');
-    }
-
-    const product = json.product;
-    const name = product.product_name || product.generic_name || 'Без названия';
-    const nutriments = product.nutriments;
-
-    const round1 = (v: number | undefined) => Math.round((v || 0) * 10) / 10;
-
-    return {
-      name: name.trim(),
-      barcode,
-      calories: round1(nutriments['energy-kcal_100g']),
-      protein: round1(nutriments['proteins_100g']),
-      fat: round1(nutriments['fat_100g']),
-      carbs: round1(nutriments['carbohydrates_100g']),
-    };
   }
 }

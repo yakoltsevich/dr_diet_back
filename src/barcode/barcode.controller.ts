@@ -1,7 +1,7 @@
 // src/barcode/barcode.controller.ts
 import { Controller, Get, Param, Req } from '@nestjs/common';
 import { BarcodeService } from './barcode.service';
-import { Request } from 'express';
+import { AuthenticatedRequest } from '../user-settings/user-settings.controller';
 
 @Controller('barcode')
 export class BarcodeController {
@@ -9,21 +9,26 @@ export class BarcodeController {
 
   @Get(':code')
   async getIngredientByBarcode(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Param('code') code: string,
   ) {
-    const userId = Number((req.user as any).id);
-    const ingredient = await this.barcodeService.findOrFetchIngredient(
-      code,
-      userId,
-    );
-    return {
-      id: ingredient.id,
-      name: ingredient.name,
-      calories: ingredient.calories,
-      protein: ingredient.protein,
-      fat: ingredient.fat,
-      carbs: ingredient.carbs,
-    };
+    try {
+      const userId = req.user?.id;
+      const ingredient = await this.barcodeService.findOrFetchIngredient(
+        code,
+        userId,
+      );
+      return {
+        id: ingredient.id,
+        name: ingredient.name,
+        calories: ingredient.calories,
+        protein: ingredient.protein,
+        fat: ingredient.fat,
+        carbs: ingredient.carbs,
+      };
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
   }
 }
