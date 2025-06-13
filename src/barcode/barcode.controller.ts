@@ -1,8 +1,10 @@
 // src/barcode/barcode.controller.ts
-import { Controller, Get, Param, Req } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards } from '@nestjs/common';
 import { BarcodeService } from './barcode.service';
 import { AuthenticatedRequest } from '../user-settings/user-settings.controller';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
+@UseGuards(JwtAuthGuard)
 @Controller('barcode')
 export class BarcodeController {
   constructor(private readonly barcodeService: BarcodeService) {}
