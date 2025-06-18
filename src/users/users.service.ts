@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { User, UserRole } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { BaseService } from '../common/base/base.service';
@@ -38,11 +38,10 @@ export class UsersService extends BaseService<User> {
         email: createUserDto.email,
         password: hashedPassword,
         name: createUserDto.name,
+        role: createUserDto.role ?? UserRole.USER,
       });
 
-      // 🟢 Создаём настройки по умолчанию
       await this.userSettingsService.createDefaultForUser(user);
-
       return user;
     } catch (error) {
       throw new BadRequestException(

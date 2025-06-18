@@ -10,6 +10,11 @@ import { Menu } from '../../menu/entities/menu.entity';
 import { Grocery } from '../../groceries/entities/grocery.entity'; // добавить импорт
 import { UserSettings } from '../../user-settings/entities/user-settings.entity';
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -40,4 +45,7 @@ export class User {
     eager: true, // если хочешь загружать по умолчанию
   })
   settings: UserSettings;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role: UserRole;
 }
