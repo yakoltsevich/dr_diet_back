@@ -4,7 +4,7 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, Patch,
   Post,
   Put,
   Query,
@@ -40,7 +40,7 @@ export class IngredientController {
     return this.ingredientService.create(createDto);
   }
 
-  @Put(':id')
+  @Patch(':id')
   update(@Param('id') id: string, @Body() updateDto: UpdateIngredientDto) {
     return this.ingredientService.updateOrThrow({ id: +id }, updateDto);
   }
