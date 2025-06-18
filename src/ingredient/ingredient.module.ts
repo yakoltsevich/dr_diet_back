@@ -5,9 +5,15 @@ import { IngredientService } from './ingredient.service';
 import { Ingredient } from './entities/ingredient.entity';
 import { OpenaiService } from '../openai/openai.service';
 import { IngredientController } from './ingredient.controller';
+import { FdcModule } from '../fdc/fdc.module';
+import { UserSettingsModule } from '../user-settings/user-settings.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Ingredient])],
+  imports: [
+    TypeOrmModule.forFeature([Ingredient]),
+    FdcModule,
+    UserSettingsModule,
+  ],
   controllers: [IngredientController],
   providers: [IngredientService, OpenaiService],
   exports: [IngredientService],

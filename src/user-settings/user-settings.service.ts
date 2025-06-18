@@ -29,11 +29,10 @@ export class UserSettingsService {
       where: { user: { id: userId } },
       relations: ['user'],
     });
-    console.log('settings old', settings);
     if (!settings) {
       settings = this.settingsRepo.create({
         ...dto,
-        user: { id: userId } as any, // 💡 Объект-заглушка с ID
+        user: { id: userId } as any,
       });
     } else {
       Object.assign(settings, dto);

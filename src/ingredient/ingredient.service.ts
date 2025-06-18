@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
-import { Ingredient, CreatedBy } from './entities/ingredient.entity'; // импорт enum
+import { Repository } from 'typeorm';
+import { CreatedBy, Ingredient } from './entities/ingredient.entity'; // импорт enum
 import { OpenaiService } from '../openai/openai.service';
 import { buildIngredientPrompt } from './prompts/ingredient.prompt';
 import { BaseService } from '../common/base/base.service';
+import { FdcService } from '../fdc/fdс.service';
+import { UserSettingsService } from '../user-settings/user-settings.service';
 
 @Injectable()
 export class IngredientService extends BaseService<Ingredient> {
@@ -12,6 +14,8 @@ export class IngredientService extends BaseService<Ingredient> {
     @InjectRepository(Ingredient)
     private readonly ingredientRepository: Repository<Ingredient>,
     private readonly openaiService: OpenaiService,
+    private readonly fdcService: FdcService,
+    private readonly userSettingsService: UserSettingsService,
   ) {
     super(ingredientRepository);
   }
@@ -54,29 +58,63 @@ export class IngredientService extends BaseService<Ingredient> {
   }
 
   async findAllPaginated({
-    offset = 0,
-    limit = 20,
     name,
+    offset,
+    limit,
+    userId,
   }: {
+    name: string;
     offset: number;
     limit: number;
-    name?: string;
+    userId: number;
   }) {
-    const where = name ? { name: ILike(`%${name}%`) } : {};
+    const settings = await this.userSettingsService.getByUser(userId);
+    const sources = settings?.ingredientSources?.length
+      ? settings.ingredientSources
+      : ['user'];
 
-    const [items, total] = await this.ingredientRepository.findAndCount({
-      where,
-      skip: offset,
-      take: limit,
-      order: { name: 'ASC' },
-    });
+    const results: any[] = [];
 
-    return {
-      data: items,
-      total,
-      offset,
-      limit,
-      hasMore: offset + limit < total,
-    };
+    // 1. Поиск по базе (user и/или ai)
+    const dbSources: string[] = [];
+    if (sources.includes('user')) dbSources.push('user');
+    if (sources.includes('ai')) dbSources.push('ai');
+
+    if (dbSources.length > 0) {
+      const qb = this.ingredientRepository.createQueryBuilder('ingredient');
+
+      if (name) {
+        qb.where('ingredient.name ILIKE :name', { name: `%${name}%` });
+      }
+
+      // Фильтрация по createdBy
+      if (dbSources.length === 1) {
+        qb.andWhere('ingredient.createdBy = :source', { source: dbSources[0] });
+      } else {
+        qb.andWhere('ingredient.createdBy IN (:...sources)', {
+          sources: dbSources,
+        });
+      }
+
+      const local = await qb.skip(offset).take(limit).getMany();
+
+      results.push(
+        ...local.map((i) => ({
+          ...i,
+          source: i.createdBy, // либо 'user' либо 'ai'
+        })),
+      );
+    }
+
+    // 2. Поиск в FDC
+    if (sources.includes('fdc') && name) {
+      const isEnglish = /^[\u0000-\u007F]+$/.test(name);
+      if (isEnglish) {
+        const fdcResults = await this.fdcService.searchByName(name);
+        results.push(...fdcResults);
+      }
+    }
+
+    return results;
   }
 }

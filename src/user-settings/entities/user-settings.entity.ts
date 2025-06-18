@@ -22,6 +22,6 @@ export class UserSettings {
   @Column({ default: 'en' })
   language: string;
 
-  @Column('simple-array', { default: '' })
+  @Column('simple-array', { default: ['user'] })
   ingredientSources: string[];
 }

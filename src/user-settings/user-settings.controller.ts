@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Put, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
 import { UserSettingsService } from './user-settings.service';
 import { UpdateUserSettingsDto } from './dto/update-user-settings.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -19,13 +19,12 @@ export class UserSettingsController {
     return this.settingsService.getByUser(req.user.id);
   }
 
-  @Put()
+  @Patch()
   updateSettings(
     @Req() req: AuthenticatedRequest,
     @Body() dto: UpdateUserSettingsDto,
   ) {
     try {
-      console.log('dto', dto);
       return this.settingsService.update(req.user.id, dto);
     } catch (error) {
       return 'asdasdasd';

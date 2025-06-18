@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Patch,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Patch, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -38,6 +31,7 @@ export class UserProfileController extends BaseController {
   })
   async findMyProfile(@Req() req: Request) {
     const userId = this.getUserId(req);
+    console.log('Получить свой профиль', userId);
     return this.userProfileService.getMyProfile(userId);
   }
 
@@ -55,6 +49,9 @@ export class UserProfileController extends BaseController {
     @Body() updateUserProfileDto: UpdateUserProfileDto,
   ) {
     const userId = this.getUserId(req);
-    return this.userProfileService.updateMyProfile(userId, updateUserProfileDto);
+    return this.userProfileService.updateMyProfile(
+      userId,
+      updateUserProfileDto,
+    );
   }
 }

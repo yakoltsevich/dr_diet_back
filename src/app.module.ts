@@ -12,6 +12,7 @@ import { MealModule } from './meal/meal.module';
 import { HealthModule } from './health/health.module';
 import { BarcodeModule } from './barcode/barcode.module';
 import { UserSettingsModule } from './user-settings/user-settings.module';
+import { FdcModule } from './fdc/fdc.module';
 
 const baseConfig: TypeOrmModuleOptions = {
   type: 'postgres',
@@ -56,6 +57,8 @@ const prodConfig: TypeOrmModuleOptions = {
     HealthModule,
     UserSettingsModule,
     BarcodeModule,
+    FdcModule,
   ],
+  providers: [],
 })
 export class AppModule {}
