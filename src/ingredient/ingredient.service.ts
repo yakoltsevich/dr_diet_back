@@ -83,17 +83,18 @@ export class IngredientService extends BaseService<Ingredient> {
     if (dbSources.length > 0) {
       const qb = this.ingredientRepository.createQueryBuilder('ingredient');
 
-      if (name) {
-        qb.where('ingredient.name ILIKE :name', { name: `%${name}%` });
-      }
-
-      // Фильтрация по createdBy
+      // Условие по createdBy (user/ai)
       if (dbSources.length === 1) {
-        qb.andWhere('ingredient.createdBy = :source', { source: dbSources[0] });
+        qb.where('ingredient.createdBy = :source', { source: dbSources[0] });
       } else {
-        qb.andWhere('ingredient.createdBy IN (:...sources)', {
+        qb.where('ingredient.createdBy IN (:...sources)', {
           sources: dbSources,
         });
+      }
+
+      // Условие по name — только если передан
+      if (name) {
+        qb.andWhere('ingredient.name ILIKE :name', { name: `%${name}%` });
       }
 
       const local = await qb.skip(offset).take(limit).getMany();
@@ -115,6 +116,8 @@ export class IngredientService extends BaseService<Ingredient> {
       }
     }
 
-    return results;
+    return {
+      data: results,
+    };
   }
 }
